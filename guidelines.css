@@ -115,5 +115,6 @@ img {
     line-height: 1.5;
     color: #666;
     text-align: justify;
-    float: left;
+     margin-top: 10px;
+    margin-bottom: 10px;
 }
