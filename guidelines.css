@@ -1,0 +1,119 @@
+* { 
+   margin: 0px ;
+   padding: 0px ;
+   box-sizing: border-box;
+   font-family: Georgia, 'Times New Roman', Times, serif; 
+}
+body{
+    background-color: #f2f2f25a;
+
+}
+.heading {
+    width: 90%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 1.6 rem;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    margin: 20px auto;
+    font-size: 25px;
+    color: #000; 
+    margin-bottom: 40px;
+    position: relative;
+
+}
+.heading::after, .heading::before{
+    content: "";
+    width: 60%;
+    height: 4px;
+    display: block;
+    margin: 0 auto;
+    background-color: #4caf50;
+    position: relative;
+}
+.container {
+    width: 90%;
+    margin: 0 auto; 
+    padding: 10px 20px;
+}
+.about {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.about-image {
+    flex: 5; 
+    margin-right: 40px;
+    overflow: hidden;
+}
+img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-right: 10px ;
+    margin-left: 0px;
+    border: 3px solid #666;
+    
+}
+.about-content {
+    flex: 5;
+}
+.about-content h3 {
+    font-size: 23px;
+    margin-bottom: 20px;
+    color: #333; 
+    margin-top: 20px;
+    text-align: justify;
+}
+.about-content p {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #666;
+    text-align: justify;
+    font-weight: 20px;
+
+}
+.about-content ul {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #666;
+    text-align: justify;
+    margin-left: 20px;
+    font-weight: 20px;
+
+}
+.about {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+
+.about-researchers h3 {
+    font-size: 23px;
+    margin-bottom: 15px;
+    color: #333; 
+    margin-top: 30px;
+    text-align: center;
+    
+}
+.about-researchers h3::after{
+    content: "";
+    width: 100%;
+    height: 2px;
+    display: block;
+    margin: 0 auto;
+    background-color: #4caf50;
+}
+    
+
+.about-researchers p {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #666;
+    text-align: justify;
+    float: left;
+}

@@ -1,0 +1,60 @@
+* { 
+   margin: 0px ;
+   padding: 0px ;
+   box-sizing: border-box;
+   font-family: Georgia, 'Times New Roman', Times, serif; 
+}
+body{
+    background-color: #f2f2f25a;
+
+}
+.heading {
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    margin: 20px auto;
+    font-size: 25px;
+    color: #000; 
+    margin-bottom: 40px;
+    position: relative;
+
+}
+.heading::after{
+    content: "";
+    width: 60%;
+    height: 4px;
+    display: block;
+    margin: 0 auto;
+    background-color: #4caf50;
+    position: relative;
+}
+.container {
+    width: 90%;
+    margin: 0 auto; 
+    padding: 10px 20px;
+}
+.about {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.about-researchers h3 {
+    font-size: 23px;
+    margin-bottom: 20px;
+    color: #333; 
+    margin-top: 20px;
+    text-align: center;
+}
+.about-researchers p {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #666;
+    text-align: justify;
+
+
+}

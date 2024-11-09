@@ -1,0 +1,77 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+#map {
+    height: 100vh;
+    width: 100vw;
+}
+
+.leaflet-popup-content-wrapper {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.leaflet-popup h1 {
+    font-size: 16px;
+    margin: 0 0 5px;
+    color: #333;
+}
+
+.map-title {
+    font-size: 24px;
+    color: #333;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 80%;
+}
+
+
+.floating-nav {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    z-index: 1001;
+    display: flex;
+    gap: 15px;
+    cursor: move; 
+}
+
+.floating-nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 5px 10px;
+}
+
+.floating-nav a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.popup-content {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: none; 
+    z-index: 1002;
+    max-width: 200px;
+}

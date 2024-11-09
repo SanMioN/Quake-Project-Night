@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project NIGHT</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .leaflet-popup-content-wrapper {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .leaflet-popup h1 {
+            font-size: 16px;
+            margin: 0 0 5px;
+            color: #333;
+        }
+
+        .map-title {
+            font-size: 24px;
+            color: #333;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 80%;
+        }
+
+        
+        .floating-nav {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            z-index: 1001;
+            display: flex;
+            gap: 15px;
+            cursor: move; 
+        }
+
+        .floating-nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 5px 10px;
+        }
+
+        .floating-nav a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .popup-content {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none; 
+            z-index: 1002;
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    
+    <nav class="floating-nav" id="draggable-nav">
+        <a href="#home">Home</a>
+        <a href="#about" id="about-link">About</a>
+        <a href="History.html"> Earthquake History</a>
+    </nav>
+
+   
+    <div class="popup-content" id="about-popup"> ABOUT THE RESEARCHER. </div>
+
+    <div id = "map">
+        <div class="leaflet-control coordinate"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.82.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+    <script src = "./faultline.js"></script>
+
+       
+     <script> 
+        var map = L.map('map').setView([14.4081, 121.0415], 12);
+        
+        var Streets= L.tileLayer('https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=uOKaq0i02gpfqceAMp8a', {
+            maxZoom: 19,
+            minZoom: 12,
+            attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+            }).addTo(map);
+
+        var OpenStreetMap = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19, 
+            minZoom: 12,
+            attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+        }).addTo(map);
+
+        L.control.locate().addTo(map);
+
+        var myIcon = L.icon ({
+            iconUrl: 'Green1.png',
+            iconSize:     [38, 95], 
+            shadowSize:   [50, 64], 
+            iconAnchor:   [22, 94], 
+            shadowAnchor: [4, 62],  
+            popupAnchor:  [-3, -76] 
+        }); 
+
+        var orangeIcon = L.icon({
+            iconUrl: 'Orange1.png', 
+            iconSize:     [38, 95], 
+            shadowSize:   [50, 64], 
+            iconAnchor:   [22, 94], 
+            shadowAnchor: [4, 62],  
+            popupAnchor:  [-3, -76] 
+
+        })
+
+        var blueIcon = L.icon({
+            iconUrl: 'blue1.png',
+            iconSize:     [38, 95], 
+            shadowSize:   [50, 64], 
+            iconAnchor:   [22, 94], 
+            shadowAnchor: [4, 62],  
+            popupAnchor:  [-3, -76] 
+
+        })
+
+        var yellowIcon = L.icon({
+            iconUrl: 'yellow1.png',
+            iconSize:     [38, 95], 
+            shadowSize:   [50, 64], 
+            iconAnchor:   [22, 94], 
+            shadowAnchor: [4, 62],  
+            popupAnchor:  [-3, -76] 
+
+        })
+
+        var redIcon = L.icon({
+            iconUrl: 'red1.png',
+            iconSize:     [38, 95], 
+            shadowSize:   [50, 64], 
+            iconAnchor:   [22, 94], 
+            shadowAnchor: [4, 62],  
+            popupAnchor:  [-3, -76] 
+
+        })
+
+        var brownIcon = L.icon({
+            iconUrl: 'brown1.png',
+            iconSize:     [38, 95], 
+            shadowSize:   [50, 64], 
+            iconAnchor:   [22, 94], 
+            shadowAnchor: [4, 62],  
+            popupAnchor:  [-3, -76] 
+
+        })
+
+        var darkIcon = L.icon({
+            iconUrl: 'brown2.png',
+            iconSize:     [38, 95], 
+            shadowSize:   [50, 64], 
+            iconAnchor:   [22, 94], 
+            shadowAnchor: [4, 62],  
+            popupAnchor:  [-3, -76] 
+
+        })
+
+        var SucatBarangayMultiPurposeCoveredCourt = L.marker ([14.4565833,121.0545556], {icon: myIcon}).bindPopup
+        (" <h1> Sucat Barangay Multi Purpose Covered Court </h1> <p> Purok 4, Barangay Sucat, Muntinlupa City </p> ")
+        var SucatOldSMHypermarket = L.marker ([14.45075,121.0475], {icon: myIcon}).bindPopup
+        ("<h1> Sucat Old SM Hypermarket </h1> <p> East Service Road, Barangay Sucat, Muntinlupa City </p>")
+        var BagongSilangPlazaCoveredCourt = L.marker ([14.4443333,121.0434722], {icon: myIcon}).bindPopup
+        ("<h1> Bagong Silang Plaza Covered Court</h1> <p> Bagong Silang, West Service Road, Barangay Sucat, Muntinlupa City </p>")
+        var SitioPagkakaisaCoveredCourt = L.marker ([14.46611340085279, 121.04706251034642], {icon: myIcon}).bindPopup
+        ("<h1> Sitio Pagkakaisa Covered Court</h> <p> Sitio Pagkakaisa, East Service Road, Barangay Sucat, Muntinlupa City </p>")
+        var LakeFrontOpenArea = L.marker ([14.469063227480166, 121.04584784899899], {icon: myIcon}).bindPopup
+        ("<h1> Lake Front Open Area</h1> <p> East Service Road, Barangay Sucat, Muntinlupa City </p> ")
+        var BuliBarangayhallCoveredCourt = L.marker ([14.442815375809612, 121.05167115215689], {icon: myIcon}).bindPopup
+        ("<h1>Buli Barangay Hall Covered Court</h1> <p> No. 41 Barangay Buli, Muntinlupa City </p> ")
+        var BuliConcepcionRoad = L.marker ([14.444778506672913, 121.04735203681156], {icon: myIcon}).bindPopup
+        ("<h1> Buli Concepcion Road</h1> <p> East Service Road, Barangay Buli, Muntinlupa City </p>")
+        var CupangMulletCoveredCourt = L.marker ([14.438488315404863, 121.0497058794635], {icon: myIcon}).bindPopup
+        ("<h1> Cupang Mullet Covered Court </h1> <p> Purok 5, Mullet Compound, Barangay Cupang, Muntinlupa City</p>")
+        var CupangMultipurposeHall = L.marker ([14.438273186040384, 121.05097785044886], {icon: myIcon}).bindPopup
+        ("<h1> Cupang Multipurpose Hall</h1> <p> E Purok 5, Mullet Compound, Barangay Cupang, Muntinlupa City </p>")
+        var HarmonyVilleOpenArea = L.marker ([14.432458686045472, 121.0509589656476], {icon: myIcon}).bindPopup
+        ("<h1> Harmony Ville Open Area</h1> <p> Lower Cupang, Ilaya, Barangay Cupang, Muntinlupa City </p>")
+        var AlabangMorningBreezeCoveredCourt = L.marker ([14.416751501733286, 121.0513495204458], {icon: myIcon}).bindPopup
+        ("<h1> Alabang Morning Breeze Covered Court </h1> <p> Morning Breeze, Ilaya, Alabang, Muntinlupa City</p>")
+        var BayananBaywalkCoveredCourtAndOpenField = L.marker ([14.410976994806385, 121.05139786564725], {icon: myIcon}).bindPopup
+        (" <h1> Bayanan Baywalk Covered Court and open Field </h1> <p> Block 1-2, Purok 6 Baywalk, Barangay Bayanan Muntinlupa City </p>" )
+        var PutatanBarangayCoveredCourt = L.marker ([14.394965820671956, 121.04815455441835], {icon:myIcon}).bindPopup
+        ("<h1> Putatan Barangay Covered Court</h1> <p> Bruger Subdivision, Barangay Putatan, Muntinlupa City </p> ")
+        var PutatanMultiPurposeHallAndEvacuationCenter = L.marker ([14.394965820671956, 121.04815455441835], {icon:myIcon}).bindPopup
+        ("<h1> Putatan Multi-Purpose Hall and Evacuation Center</h1> <p> Bruger Subdivision, Barangay Putatan, Muntinlupa City </p> ")
+        var PoblacionOpenArea = L.marker ([14.390569215019331, 121.05024098415487], {icon:myIcon}).bindPopup
+        ("<h1> Poblacion Open Area </h1> <p> JP Rizal Stt., Barangay Poblacion, Muntinlupa City</p>")
+        var BiazonCoveredCourt = L.marker ([14.373735486097475, 121.02418115400984], {icon:myIcon}).bindPopup
+        ("<h1> Biazon Covered Court </h1> <p> Southville Housing, NBP Reservation, Barangay Poblacion, Muntinlupa City </p>")
+        var SunkenGardenOpenArea = L.marker ([14.382090993487095, 121.03019942331926], {icon:myIcon}).bindPopup
+        (" <h1> Sunken Garden Open Area </h1> <p> Upper Poblacion, NBP Reservation, Barangay Poblacion, Muntinlupa City </p>")
+        var NBPReservationOpenArea = L.marker ([14.383255962795229, 121.03058676823167], {icon:myIcon}).bindPopup
+        ("<h1>NBP Reservation Open Area</h1> <p> Upper Poblacion, NBP Reservation, Barangay Poblacion, Muntinlupa City</p>")
+        var TunasanSportsComplex = L.marker ([14.383255962795229, 121.03058676823167], {icon:myIcon}).bindPopup
+        ("<h1>Tunasan Sports Complex</h1> <p> Purok 1, Buendia St. Barangay Tunasan, Muntinlupa City </p>")
+        var TunasanArandiaCoveredWalkAndOpenField = L.marker ([14.380022668805749, 121.05131182865455], {icon:myIcon}).bindPopup
+        ("<h1>Tunasan-Arandia Covered Walk & Open Field</h1> <p> Purok 2, Buendia St. Barangay Tunasan, Muntinlupa City </p>")
+
+        var AlabangMedicalCenter = L.marker ([14.427406426223579, 121.02450246462844], {icon: orangeIcon}).bindPopup
+        ('<h1> Alabang Medical Center</h1> <p> Alabang-Zapote Rd., Muntinlupa City 1702 </p> ')
+        var AlabangMedicalClinic = L.marker ([14.419229521688075, 121.04997592785682], {icon: orangeIcon}).bindPopup
+        ('<h1> Alabang Medical Clinic </h1> <p> 297 Montillano St., Alabang Muntinlupa City 1702 </p> ')
+        var AsianHospitalAndMedicalCenter = L.marker ([14.413438834484078, 121.04352730618994], {icon: orangeIcon}).bindPopup
+        ('<h1> Asian Hospital and Medical Center </h1> <p> 2205 Civic Drive, Filinvest Corporate City Alabang Muntinlupa City 1702 </p>')
+        var BarbaranEchavezMedicalAndPsychiatricClinic = L.marker ([14.388127693762568, 121.05016042331935], {icon:orangeIcon}).bindPopup
+        ('<h1> Babaran-Echavez Medical and Psychiatric Clinic</h1> <p> 1125 Amparo St., Poblacion, Muntinlupa City </p>')
+        var BeatoCauilanHospital = L.marker ([14.370930699856668, 121.04940076564627], {icon: orangeIcon}).bindPopup
+        ('<h1>Beato Cauilan Hospital</h1> <p> Villa Carolina, National Highway Muntinlupa City 1702</p>')
+        var HillsidegeneralHospital = L.marker ([14.431745205467431, 121.04340453681118], {icon: orangeIcon}).bindPopup
+        ('<h1> Hillside General Hospital </h1> <p> Alabang, Muntinlupa City </p>')
+        var MPIMedicalCenterMuntinlupa = L.marker ([14.394934502067885, 121.04485539447826], {icon:orangeIcon}).bindPopup
+        ('<h1> MPI-Medical Center Muntinlupa</h1> <p> 38 National Rd, Puatatan, Muntinlupa City 1702 </p>')
+        var MuntinlupaDoctorsClinic = L.marker ([14.395082103221075, 121.04500880619513], {icon:orangeIcon}).bindPopup
+        ('<h1> Muntinlupa Doctor’s Clinic</h1> <p> 1 National Rd., Putatan Muntinlupa City 1702</p> ')
+        var OspitalNgMuntinlupa = L.marker ([14.414310712754721, 121.04400109448358], {icon:orangeIcon}).bindPopup
+        ('<h1> Ospital ng Muntinlupa</h1. <p>Filinvest Civic Drive, Filinvest Corporate City Alabang, Muntinlupa City</p>')
+        var ResearchInstituteForrTropicalMedicine = L.marker ([14.409936647849863, 121.0372587306908], {icon:orangeIcon}).bindPopup
+        ('<h1> Research Institute for Tropical Medicine</h1> <p> Filinvest Corporate City Alabang, Muntinlupa City 1702</p> ')
+        var SanRoqueMedicalClinic = L.marker ([14.419244554770867, 121.04704968465461], {icon: orangeIcon}).bindPopup
+        ('<h1> San Roque Medical Clinic </h1> <p> Filinvest Corporate City Alabang, Muntinlupa City 1702</p> ')
+
+        var GoodDayKoreaConvienceStore = L.marker ([14.393770186079767, 121.04462483681044], {icon:blueIcon}).bindPopup
+        ('<h1> Good Day (GD24) Korea Convenience Store </h1>')
+        var SevenElevenMuntinlupa054 = L.marker ([ 14.38904198608399, 121.04470256564679], {icon:blueIcon}). bindPopup
+        ('<h1> 7 Eleven Muntinlupa 054 </h1>')
+        var MighteeMartLakeView = L.marker ([ 14.39475410205189, 121.04338049448315], {icon:blueIcon}). bindPopup 
+        ('<h1> Mightee Mart - Lake View </h1>')
+        var SevenElevenCivicPrime = L.marker ([14.418481095149529, 121.0432065521563], {icon:blueIcon}). bindPopup 
+        ('7 Eleven Civic Prime')
+        var SevenElevenMMontillano2 = L.marker ([ 14.41899605459892, 121.0465893616836], {icon:blueIcon}). bindPopup 
+        ('<h1> 7-Eleven Montillano 2 (1122) </h1>')
+        var LawsonConvienceStoreFilinvestAxisStore = L.marker ([ 14.423703104724144, 121.03738886564753], {icon:blueIcon}). bindPopup 
+        ('<h1> Lawson Convenience Store - Filinvest Axis Store </h1>')
+        var FamilyMart = L.marker ([ 14.423004540143145, 121.03960458530081], {icon:blueIcon}). bindPopup 
+        ('<h1> Family Mar </h1>')
+        var SevenElevenSouthStation = L.marker ([14.419603693704612, 121.04365059768274], {icon:blueIcon}). bindPopup 
+        ('<h1> 7-Eleven South Station </h1>')
+        var SevenEleven2764Montillano3 = L.marker ([14.419255504313254, 121.04632496564744], {icon:blueIcon}). bindPopup 
+        ('<h1> 7-Eleven 2764 Montillano 3 </h1>')
+        var SevenElevenTheLevels = L.marker ([14.419764504360252, 121.03337620797471], {icon:blueIcon}). bindPopup 
+        ('<h1> 7-Eleven The Levels </h1>')
+        var LawsonConvienceStoreOnGriffinstoneStore = L.marker ([14.418762213373371, 121.03641579448362], {icon:blueIcon}). bindPopup 
+        ('<h1> Lawson Convenience Store - One Griffinstone Store </h1>')
+        var SevenElevenTustineAlabang = L.marker ([ 14.417885689581864, 121.04572322406314], {icon:blueIcon}). bindPopup 
+        ('<h1> 7-Eleven TUSTINE ALABANG </h1>')
+        var AssiFreshPizza = L.marker ([14.419180439870631, 121.03460249272825], {icon:blueIcon}). bindPopup 
+        ('<h1> ASSI Fresh Plaza </h1>')
+        var LawsonConvienceStoreAyalaAlabangStore = L.marker ([14.424907948491487, 121.02806885215645], {icon:blueIcon}). bindPopup 
+        ('<h1> Lawson Convenience Store - Ayala Alabang Store </h1>')
+        var SevenElevenBayananMarket = L.marker ([14.409004803366663, 121.04647606564711], {icon:blueIcon}). bindPopup 
+        ('<h1> 7 Eleven Bayanan Market </h1>')
+        var SevenElevenAxis = L.marker ([14.424808404826276, 121.03757755215655], {icon:blueIcon}). bindPopup 
+        ('<h1> 7 Eleven Axis </h1>')
+        var SevenElevenMontillano1 = L.marker ([14.436918905945792, 121.05028139448406], {icon:blueIcon}). bindPopup 
+        ('<h1> 7-Eleven MONTILLANO 1 </h1>')
+        var SevenElevenCupang = L.marker ([ 14.38904198608399, 121.04470256564679], {icon:blueIcon}). bindPopup 
+        ('<h1> 7-Eleven - Cupang( ML QUEZON) </h1>')
+        var SevenElevenPolarisCorporateCenter = L.marker ([14.420873904462717, 121.03832159448373], {icon:blueIcon}). bindPopup 
+        ('<h1> 7-Eleven - Polaris Corporate Center</h1>')
+        
+        var PharmaAsia = L.marker ([14.427156664177264, 121.04973564984951], {icon: yellowIcon}).bindPopup
+        ('<h1> PHARMA ASIA </h1> <p> C2GX+VWV Manuel L. Quezon Muntinlupa Metro Manila </p>')
+        var MersonWawaAlabangBrach = L.marker ([14.421727604541568, 121.05013343681094], {icon:yellowIcon}).bindPopup
+        ('<h1> Merson Wawa Alabang Branch </h1> <p> 125 Wawa Street Alabang Muntinlupa City 1770 Metro Manila </p>')
+        var TGP = L.marker ([14.424788693880133, 121.04566088513988], {icon: yellowIcon}).bindPopup
+        (' <h1> TGP </h1> <p> C2FW+X74, W Service Rd, Muntinlupa, Metro Manila</p>')
+        var TGPAlabangMontillano = L.marker ([ 14.419124830331015, 121.0470296013842], {icon: yellowIcon}).bindPopup
+        ('<h1> TGP Alabang Montillano </h1> <p> C29W+MRJ, Montillano St, Muntinlupa, Metro Manila </p>')
+        var TGPTheGenericsPharmacyIlayaBranch = L.marker ([14.418778836667295, 121.0501427507277],{icon: yellowIcon}).bindPopup
+        ('<h1> TGP The Generics Pharmacy Ilaya Branch </h1> <p> FOURTH DISTRICT, 86 Ilaya, Muntinlupa, 1780 Metro Manila</p>')
+        var TGPTheGenericsPharmacyMolinaBranch = L.marker([14.41803741986475, 121.04580475574086], {icon: yellowIcon}).bindPopup
+        ('<h1> TGP The Generics Pharmacy Molina Branch </h1> <p> 150 T. Molina, Muntinlupa, Metro Manila</p>')
+        var TGPTheGenericsPharmacySouthBranch = L.marker ([14.421497343833886, 121.0368225544704], {icon: yellowIcon}).bindPopup
+        (' <h1> 14.421497343833886, 121.0368225544704 </h1> <p> SOUTH SUPERMARKET, ALABANG MUNTINLUPA, Muntinlupa, 1799 Metro Manila</p>')
+        var TGPTheGenericsPharmacyServiceRdBranch = L.marker([14.430542319789392, 121.0458047558549], {icon: yellowIcon}).bindPopup
+        ('<h1> TGP The Generics Pharmacy E Service Rd Branch </h1> <p> UNIT 8, NO, 4 KM 23.5 E Service Rd, Muntinlupa, Metro Manila</p>')
+        var MercuryDrugSouthSupermarket = L.marker([ 14.421316413728468, 121.03611952332008], {icon: yellowIcon}). bindPopup
+        ('<h1> Mercury Drug - South Supermarket </h1> <p> South Supermarket, Filinvest Avenue 1781, Filinvest Ave, Muntinlupa, Metro Manila </p>')
+        var MercuryDrugAlabangLianas = L.marker([14.41896424049378, 121.04718126564737], {icon: yellowIcon}).bindPopup
+        ('<h1> Mercury Drug - Alabang Lianas </h1> <p> C29W+HV8, Lianas Complex, Montillano St, Muntinlupa, Metro Manila</p>')
+        var K2DrugAlabang = L.marker ([14.414097003836778, 121.04348949448367], {icon: yellowIcon}).bindPopup
+        ('<h1> K2 Drug Alabang</h1> <p> 2301 Civic Dr, Filinvest Alabang, Muntinlupa, 1781 Metro Manila</p>')
+        var MedicinaPharmacy = L.marker ([14.417013305116642, 121.04756502587675], {icon:yellowIcon}).bindPopup
+        ('<h1> Medicina Pharmacy</h1> <p> Lower Ground Floor, 092-094 South Station, T. Molina Street, Alabang, Muntinlupa City, 1770 Metro Manila</p>')
+        var WatsonsPharmacy = L.marker ([14.419381989230189, 121.04503301459519], {icon:yellowIcon}).bindPopup
+        ('<h1> Watsons Pharmacy </h1> <p>Alabang-Montillano Footbridge, Montillano St, Muntinlupa, Metro Manila </p>')
+        var MangLiloyDrugstore = L.marker ([14.4070616031873, 121.04675659448337], {icon:yellowIcon}). bindPopup
+        ('<h1> Mang Liloy Drugstore (Brgy. Bayanan, Muntinlupa City) </h1> <p> 221-E National Road, Muntinlupa, Metro Manila </p>')
+        var AlabangMedcarePharmacy = L.marker ([14.418293795140972, 121.04329813681099], {icon:yellowIcon}).bindPopup
+        (' <h1> Alabang Medcare Pharmacy</h1> <p>Unit 113 Civic Prime Condominium, Civic Drie Filinvest Corporate City, Muntinlupa, 1781 Metro Manila</p>')
+        var JNPharmacy = L.marker ([14.41415127341634, 121.04359408449093], {icon: yellowIcon}). bindPopup
+        ('<h1> JN Pharmacy </h1> <p> C27V+MCP, Muntinlupa, Metro Manila </p>')
+        var K2PharmacyVTXAlabangBranch = L.marker ([14.415204294999716, 121.04598472332006], {icon:yellowIcon}).bindPopup
+        ('<h1> K2 Pharmacy VTX Alabang Branch </h1> <p> Vista Terminal Exchange, Muntinlupa, Metro Manila </p>')
+        var PharmaDocPharmacy = L.marker ([14.41928177692866, 121.04975556564739], {icon: yellowIcon}).bindPopup
+        ('<h1> Pharma Doc Pharmacy </h1> <p> 295 Montillano St, Muntinlupa, 1770 Metro Manila </p>')
+        var MercuryDrugCitiArcade = L.marker ([14.434022495860809, 121.04496666564754], {icon:yellowIcon}).bindPopup
+        ('<h1> Mercury Drug Citi Arcade (389) </h1> <p> Units 8-11 Alabang Citi Arcade, Don Jesus Boulevard, Cupang, 1771, Muntinlupa, 1771 Metro Manila</p>')
+        var MuntinlupaMedicalSupplyAndPharmacy = L.marker ([14.391307201734005, 121.04470369448309], {icon:yellowIcon}).bindPopup
+        ('<h1> MUNTINLUPA MEDICAL SUPPLY AND PHARMACY </h1> <p> 8 Aguilar compound, National Road, Muntinlupa, 1772 Metro Manila</p>')
+
+        var SouthStationTransportTerminal = L.marker ([14.4217586,121.0436595], {icon: redIcon}).bindPopup
+        ('<h1> South Station Transport Terminal </h1> <p> South Station Complex Spectrum Midway, Muntinlupa, 1781 Metro Manila </p>')
+        var MuntinlupaTrainStation = L.marker ([14.3895014, 121.0449492], {icon:redIcon}).bindPopup
+        ('<h1> Muntinlupa Train Station </h1> <p> Country Homes Subdivision, Muntinlupa, Metro Manila</p>')
+        var StarmallAlabangTransportTerminal = L.marker ([14.4152296,121.0436484], {icon:redIcon}).bindPopup
+        ('<h1> Starmall Alabang Transport Terminal </h1> <p> C28W+38X, Muntinlupa, Metro Manila </p> ')
+        var CityTerminalAlabang = L.marker ([14.4182443,121.0423864], {icon:redIcon}).bindPopup
+        ('<h1> City Terminal Alabang </h1> <p> C29V+6RR, Muntinlupa, Metro Manila </p>')
+        var AlabangPITXBusTerminal = L.marker ([14.4149884,121.0458616], {icon: redIcon}).bindPopup
+        (' <h1> Alabang-PITX Bus Terminal </h1> <p> C28W+292, Muntinlupa, Metro Manila </p>')
+        var SouthStation = L.marker ([14.4204033,121.0428935], { icon:redIcon}).bindPopup
+        ('<h1> South Station </h1> <p> C2CV+556, Corner Corporate Avenue, Spectrum Midway, Muntinlupa, Metro Manila </p>')
+        var BicolIsarogAlabangSouthStation = L.marker ([14.4223354,121.0438372], {icon:redIcon}).bindPopup
+        ('<h1> Bicol Isarog Alabang South Station </h1> <p> South Station Terminal Covered Walkway, Muntinlupa, 1781 Metro Manila</p>')
+        var DelaRosaExpress = L.marker ([14.4220611,121.0438871], {icon:redIcon}).bindPopup
+        ('<h1> Dela Rosa Express / N. Dela Rosa Liner Bus Terminal</h1> <p> South Station Terminal Covered Walkway, Muntinlupa, 1781 Metro Manila</p>')
+        var AlabangPasayRTDJeepneyTerminal = L.marker ([14.4194195,121.0422231], {icon:redIcon}).bindPopup
+        ('<h1> Alabang-Pasay RTD Jeepney Terminal</h1> <p> C29V+QQ7 Public Market, Muntinlupa, Metro Manila</p>')
+        var CeresRoRoTerminal = L.marker ([14.4151082,121.046041], {icon:redIcon}).bindPopup
+        ('<h1> Ceres / Valisno RoRo Terminal </h1> <p> C28W+2C5, Muntinlupa, Metro Manila</p>')
+        var BalibagoJeepTerminal = L.marker ([14.41987,121.043718], {icon:redIcon}).bindPopup
+        ('<h1> Balibago Jeep Terminal</h1> <p> 20 Alabang–Zapote Rd, Muntinlupa, Metro Manila</p>')
+        var VTXVistaTerminalExchangeAlabang = L.marker ([14.4156811,121.046189], {icon:redIcon}).bindPopup
+        ('<h1> VTX-Vista Terminal Exchange Alabang</h1> <p> Starmall Alabang Building, Starmall Service Road, Muntinlupa, 1780 Metro Manila</p>')
+        var HMTransportBusTerminal = L.marker ([14.4153881,121.045682], {icon:redIcon}).bindPopup
+        ('<h1> HM Transport Bus Terminal </h1> <p> Manila South Road, Corner South Luzon Expy, Muntinlupa, Metro Manila</p>')
+        var P2PBusStopAlabangTownCenter = L.marker([14.4240911,121.0316938], {icon:redIcon}).bindPopup
+        ('<h1> P2P Bus Stop - Alabang Town Center </h1> <p> C2FJ+JMP, Alabang Town Center, Muntinlupa, Metro Manila</p>')
+        var PalmjodaPistonJeepneyTerminal = L.marker ([14.4182643,121.0443476], {icon:redIcon}).bindPopup
+        ('<h1> Palmjoda-Piston Jeepney Terminal (Alabang-San Pedro (Pacita) Route) </h1> <p> C29V+8P5, MMDA Alabang-Montillano Footbridge, Muntinlupa, Metro Manila</p>')
+        var SucatTrainStation = L.marker ([14.4523,121.05094], {icon:redIcon}).bindPopup
+        (' <h1> Sucat Train Station</h1> <p> Meralco Road, Muntinlupa, Metro Manila</p>')
+        var SucatTatawidLawtonBaclaranTerminal = L.marker ([14.453351,121.0467224], {icon:redIcon}).bindPopup
+        ('<h1> Sucat Tatawid - Lawton - Baclaran Terminal </h1> <p> F23W+8MX, Muntinlupa, Metro Manila</p>')
+        var SVIIIMuntinlupaTransportServiceCooperative = L.marker([14.3692432,121.016141], {icon:redIcon}).bindPopup
+        ('<h1> SVIII Muntinlupa Transport Service Cooperative</h1> <p> 9299+M8Q, Rd 5-F, Muntinlupa, Metro Manila</p>')
+        var UVExperessTerminal = L.marker([14.3654285,121.024217], {icon:redIcon}).bindPopup
+        ('<h1> UV Express Terminal </h1> <p> 9277+W2W, Dona Anastacia Reyes Ave, Muntinlupa, Metro Manila</p>')
+        var PNRAlabangStation = L.marker ([14.3886484,121.0454583], {icon:redIcon}).bindPopup
+        ('<h1> PNR Alabang Station </h1> <p> T. Molina, Muntinlupa, 1781 Metro Manila </p>')
+        
+        var MuntinlupaCityHall = L.marker ([14.395039694078157, 121.04425072331958], {icon: brownIcon}).bindPopup
+        ('<h1> Muntinlupa City Hall </h1> <p>92WV+2MH, Manila S Rd, Muntinlupa, 1772 Metro Manila</p>')
+        var MuntinlupaCityDisasterReductionAndMgtOffice = L.marker([14.38626169367747, 121.0431782944831], {icon:brownIcon}).bindPopup
+        ('<h1> Muntinlupa City Disaster Reduction & Mgt Office</h1> <p> 92PV+G73, Muntinlupa, Metro Manila</p>')
+    
+        var EvacuationAreas = L.layerGroup ([SucatBarangayMultiPurposeCoveredCourt, SucatOldSMHypermarket, BagongSilangPlazaCoveredCourt, SitioPagkakaisaCoveredCourt, 
+            LakeFrontOpenArea, BuliBarangayhallCoveredCourt, BuliConcepcionRoad,CupangMulletCoveredCourt,CupangMultipurposeHall,HarmonyVilleOpenArea,AlabangMorningBreezeCoveredCourt,
+            BayananBaywalkCoveredCourtAndOpenField, PutatanBarangayCoveredCourt, PutatanMultiPurposeHallAndEvacuationCenter ,PoblacionOpenArea,
+            BiazonCoveredCourt,SunkenGardenOpenArea,NBPReservationOpenArea,TunasanArandiaCoveredWalkAndOpenField, TunasanSportsComplex,TunasanArandiaCoveredWalkAndOpenField])
+
+        var Hospitals = L.layerGroup ([AlabangMedicalCenter, AlabangMedicalClinic, AsianHospitalAndMedicalCenter, BarbaranEchavezMedicalAndPsychiatricClinic, 
+            BeatoCauilanHospital, HillsidegeneralHospital, MPIMedicalCenterMuntinlupa, MuntinlupaDoctorsClinic, OspitalNgMuntinlupa,ResearchInstituteForrTropicalMedicine, SanRoqueMedicalClinic])
+
+        var Establishments = L.layerGroup ([GoodDayKoreaConvienceStore, SevenElevenMuntinlupa054, MighteeMartLakeView, SevenElevenCivicPrime, SevenElevenMMontillano2,
+            LawsonConvienceStoreFilinvestAxisStore, FamilyMart, SevenElevenSouthStation, SevenEleven2764Montillano3, SevenElevenTheLevels, LawsonConvienceStoreOnGriffinstoneStore,
+            SevenElevenTustineAlabang, AssiFreshPizza, LawsonConvienceStoreAyalaAlabangStore, SevenElevenBayananMarket, SevenElevenAxis, SevenElevenMontillano1, SevenElevenCupang, 
+            SevenElevenPolarisCorporateCenter])
+
+        var Pharmacy = L.layerGroup ([PharmaAsia, MersonWawaAlabangBrach, TGP, TGPTheGenericsPharmacyIlayaBranch, TGPTheGenericsPharmacyMolinaBranch, TGPTheGenericsPharmacyServiceRdBranch,
+            TGPTheGenericsPharmacySouthBranch, MercuryDrugSouthSupermarket, MercuryDrugAlabangLianas, K2DrugAlabang, MedicinaPharmacy, WatsonsPharmacy, MangLiloyDrugstore, 
+            AlabangMedcarePharmacy, JNPharmacy, K2PharmacyVTXAlabangBranch, PharmaDocPharmacy, MercuryDrugCitiArcade, MuntinlupaMedicalSupplyAndPharmacy])
+
+        var Terminal = L.layerGroup ([SouthStationTransportTerminal,MuntinlupaTrainStation, StarmallAlabangTransportTerminal, CityTerminalAlabang, AlabangPITXBusTerminal, 
+            SouthStation, PNRAlabangStation, BicolIsarogAlabangSouthStation, DelaRosaExpress, AlabangPasayRTDJeepneyTerminal, CeresRoRoTerminal, VTXVistaTerminalExchangeAlabang, 
+            P2PBusStopAlabangTownCenter, PalmjodaPistonJeepneyTerminal, SucatTrainStation, SucatTatawidLawtonBaclaranTerminal, SVIIIMuntinlupaTransportServiceCooperative, UVExperessTerminal])
+
+        var Government = L.layerGroup ([MuntinlupaCityHall, MuntinlupaCityDisasterReductionAndMgtOffice])
+
+        var myStyle = {
+        "color": "#ff0400",
+        "weight": 5,
+        "opacity": 0.65
+        };
+
+        var faultline= L.geoJSON(faultline, {
+        style: myStyle
+        }).addTo(map);
+
+        var basemaps = { 
+            "Streets": Streets,
+            "Open Street Map": OpenStreetMap 
+        }
+        var overlayMaps = {
+            "Evacuation Areas": EvacuationAreas, 
+            "Hospitals": Hospitals, 
+            '24/7 Establishments': Establishments,
+            'Pharmacies': Pharmacy,
+            'Terminals': Terminal,
+            'Government Offices': Government, 
+            
+        }
+
+        var geocoder = L.Control.geocoder({
+            defaultMarkGeocode: true
+        }).addTo(map);
+
+        L.control.layers(basemaps, overlayMaps,).addTo(map) 
+
+        map.on ("mousemove", function(e) {
+            document.getElementsByClassName("coordinate")[0].innerHTML = "lat:" + e.latlng.lat + "lng:" + e.latlng.lng; 
+            console.log("lat:" + e.latlng.lat, "lng:" + e.latlng.lng); 
+
+        })
+
+        const navBar = document.getElementById("draggable-nav");
+        let isDragging = false, startX, startY, initialX, initialY;
+
+        navBar.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            initialX = navBar.offsetLeft;
+            initialY = navBar.offsetTop;
+            document.addEventListener("mousemove", onMouseMove);
+            document.addEventListener("mouseup", onMouseUp);
+        });
+
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            navBar.style.left = initialX + deltaX + "px";
+            navBar.style.top = initialY + deltaY + "px";
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            document.removeEventListener("mousemove", onMouseMove);
+            document.removeEventListener("mouseup", onMouseUp);
+        }
+
+   
+        const aboutLink = document.getElementById("about-link");
+        const historyLink = document.getElementById("history-link");
+        const aboutPopup = document.getElementById("about-popup");
+        const historyPopup = document.getElementById("history-popup");
+
+        aboutLink.addEventListener("mouseover", () => {
+            aboutPopup.style.display = "block";
+            aboutPopup.style.left = `${aboutLink.getBoundingClientRect().left}px`;
+            aboutPopup.style.top = `${aboutLink.getBoundingClientRect().bottom + 5}px`;
+        });
+
+        aboutLink.addEventListener("mouseout", () => {
+            aboutPopup.style.display = "none";
+        });
+
+        historyLink.addEventListener("mouseover", () => {
+            historyPopup.style.display = "block";
+            historyPopup.style.left = `${historyLink.getBoundingClientRect().left}px`;
+            historyPopup.style.top = `${historyLink.getBoundingClientRect().bottom + 5}px`;
+        });
+
+        historyLink.addEventListener("mouseout", () => {
+            historyPopup.style.display = "none";
+        });
+        var titleDiv = L.DomUtil.create('div', 'map-title');
+        titleDiv.innerHTML = "Map of Muntinlupa City, Philippines";
+        document.body.appendChild(titleDiv);
+    </script>
+</body>
+</html>
