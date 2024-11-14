@@ -17,17 +17,17 @@
         }
 
         h1 { 
-            text-align: right;
-            font-size: 30px;
+            text-align: center;
+            font-size: 35px;
             color: #333;
             font-family: Georgia, 'Times New Roman', Times, serif;
-            
         }
         p {
             text-align: center;
             font-size: 10px;
             font-family: Georgia, 'Times New Roman', Times, serif;
         }
+
         #map {
             height: 100vh;
             width: 100vw;
@@ -48,7 +48,7 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: gray;
             color: #fff;
             padding: 10px 20px;
             border-radius: 8px;
@@ -57,7 +57,7 @@
             display: flex;
             gap: 15px;
             cursor: move;
-            position: absolute
+            position: absolute;
         }
 
         .floating-nav a {
@@ -85,7 +85,10 @@
     </style>
 </head>
 
+
+
 <body>
+
     <nav class="floating-nav" id="draggable-nav">
         <a href ="guidelines.html"> About</a>
         <a href="History.html">Earthquake History</a>
@@ -106,17 +109,18 @@
      <script> 
         var map = L.map('map').setView([14.4081, 121.0415], 12);
         
-        var DarkStreets= L.tileLayer('https://api.maptiler.com/maps/toner-v2/{z}/{x}/{y}.png?key=uOKaq0i02gpfqceAMp8a', {
-            maxZoom: 19,
-            minZoom: 12,
-            attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
-            }).addTo(map);
 
         var OpenStreetMap = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19, 
             minZoom: 12,
             attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
         }).addTo(map);
+
+        var NightStreets= L.tileLayer('https://api.maptiler.com/maps/toner-v2/{z}/{x}/{y}.png?key=uOKaq0i02gpfqceAMp8a', {
+            maxZoom: 19,
+            minZoom: 12,
+            attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+            }).addTo(map);
 
         L.control.locate().addTo(map);
 
@@ -333,7 +337,7 @@
         ('<h1> Mercury Drug Citi Arcade (389) </h1> <p> Units 8-11 Alabang Citi Arcade, Don Jesus Boulevard, Cupang, 1771, Muntinlupa, 1771 Metro Manila </p> <p> Opening hours - [7:00 AM - 10:00 PM]</p>')
         var MuntinlupaMedicalSupplyAndPharmacy = L.marker ([14.391307201734005, 121.04470369448309], {icon:yellowIcon}).bindPopup
         ('<h1> MUNTINLUPA MEDICAL SUPPLY AND PHARMACY </h1> <p> 8 Aguilar compound, National Road, Muntinlupa, 1772 Metro Manila</p> <p> Opening hours - [8:00 AM - 8:00 PM]</p>')
-        
+
         var SouthStationTransportTerminal = L.marker ([14.4217586,121.0436595], {icon: redIcon}).bindPopup
         ('<h1> South Station Transport Terminal </h1> <p> South Station Complex Spectrum Midway, Muntinlupa, 1781 Metro Manila </p>')
         var MuntinlupaTrainStation = L.marker ([14.3895014, 121.0449492], {icon:redIcon}).bindPopup
@@ -414,8 +418,8 @@
         }).addTo(map);
 
         var basemaps = { 
-            "Streets": Streets,
-            "Open Street Map": OpenStreetMap 
+            "Open Street Map": OpenStreetMap,
+            "Night Street": NightStreets 
         }
         var overlayMaps = {
             "Evacuation Areas": EvacuationAreas, 
